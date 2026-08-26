@@ -1,0 +1,93 @@
+country,cities,avg_temp_f,avg_humidity_pct,avg_wind_mph
+United Arab Emirates,1,95.0,53.0,8.0
+Iraq,1,94.0,24.0,11.0
+Kuwait,1,91.0,67.0,0.0
+Qatar,1,91.0,84.0,6.0
+Dominican Republic,1,90.0,66.0,4.0
+Japan,1,90.0,63.0,7.0
+Taiwan,1,88.0,70.0,8.0
+Singapore,1,88.0,75.0,6.0
+Thailand,1,88.0,62.0,13.0
+South Korea,1,86.0,79.0,5.0
+Indonesia,1,86.0,61.0,11.0
+Jamaica,1,86.0,59.0,11.0
+China,2,84.5,70.5,2.0
+Iran,1,84.0,15.0,5.0
+Kiribati,1,84.0,81.0,11.0
+Nicaragua,1,84.0,66.0,5.0
+Vietnam,1,84.0,89.0,7.0
+Malaysia,1,84.0,74.0,6.0
+Philippines,1,84.0,79.0,2.0
+Bangladesh,1,83.0,91.0,0.0
+Puerto Rico,1,83.0,82.0,10.0
+Pakistan,3,83.0,75.3,9.7
+Bahamas,1,82.0,79.0,5.0
+Venezuela,1,82.0,84.0,2.0
+Hong Kong,1,82.0,84.0,13.0
+Algeria,1,82.0,89.0,0.0
+Saudi Arabia,1,82.0,15.0,3.0
+India,4,81.5,86.2,7.8
+Greece,1,81.0,50.0,0.0
+Myanmar,1,81.0,94.0,5.0
+Usa,22,79.0,57.2,9.0
+Jordan,1,79.0,34.0,5.0
+Egypt,1,79.0,84.0,6.0
+Cuba,1,77.0,89.0,5.0
+Fiji,1,77.0,71.0,25.0
+El Salvador,1,77.0,83.0,2.0
+Nepal,1,77.0,79.0,2.0
+Ghana,1,77.0,89.0,12.0
+Nigeria,1,77.0,94.0,3.0
+Israel,1,75.0,30.0,1.0
+Honduras,1,75.0,65.0,6.0
+Italy,1,75.0,74.0,6.0
+Congo Demrep,1,73.0,78.0,5.0
+Tanzania,1,72.0,94.0,5.0
+Morocco,1,72.0,83.0,3.0
+Bulgaria,1,72.0,68.0,2.0
+Peru,1,71.0,79.0,29.0
+Paraguay,1,70.0,73.0,5.0
+Serbia,1,70.0,83.0,3.0
+Spain,2,69.5,67.0,4.5
+Brazil,3,69.3,76.7,3.7
+Portugal,1,68.0,88.0,9.0
+Hungary,1,68.0,49.0,2.0
+Guatemala,1,68.0,78.0,18.0
+Australia,7,67.6,62.7,10.4
+Canada,9,66.6,79.4,8.4
+Turkey,2,66.5,71.0,2.5
+France,1,66.0,88.0,2.0
+Croatia,1,66.0,94.0,2.0
+Kazakstan,1,66.0,60.0,1.0
+Uk,1,66.0,78.0,5.0
+Romania,1,64.0,94.0,5.0
+Uzbekistan,1,64.0,53.0,2.0
+Mexico,1,64.0,56.0,8.0
+Austria,1,63.0,83.0,6.0
+Ukraine,1,62.0,61.0,0.0
+New Zealand,1,61.0,72.0,17.0
+Switzerland,1,61.0,100.0,1.0
+Ireland,1,61.0,88.0,13.0
+Germany,2,60.0,82.5,7.0
+Ethiopia,1,59.0,94.0,5.0
+Denmark,1,59.0,100.0,10.0
+Belgium,1,59.0,82.0,6.0
+Czech Republic,1,57.0,88.0,7.0
+Argentina,1,55.0,67.0,13.0
+Netherlands,1,55.0,88.0,6.0
+Kenya,1,55.0,82.0,0.0
+Chile,1,54.0,88.0,5.0
+Colombia,1,54.0,77.0,2.0
+Estonia,1,54.0,100.0,2.0
+South Africa,2,54.0,53.5,5.0
+Poland,1,52.0,100.0,1.0
+Belarus,1,52.0,94.0,6.0
+Russia,2,50.5,77.5,10.0
+Zimbabwe,1,50.0,72.0,13.0
+Finland,1,50.0,100.0,5.0
+Norway,1,50.0,88.0,3.0
+Sweden,1,50.0,94.0,1.0
+Uruguay,1,48.0,76.0,6.0
+Madagascar,1,48.0,100.0,0.0
+Iceland,1,46.0,82.0,3.0
+Bolivia,1,40.0,63.0,16.0

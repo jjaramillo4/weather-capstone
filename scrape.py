@@ -22,8 +22,10 @@ from selenium.common.exceptions import (
     TimeoutException,
     WebDriverException,
 )
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from webdriver_manager.chrome import ChromeDriverManager
 
 INDEX_URL = "https://www.timeanddate.com/weather/"
 OUT_CSV = os.path.join("data", "raw", "weather_raw.csv")
@@ -50,15 +52,31 @@ LABELS = ("Feels Like", "Forecast", "Wind", "Humidity", "Dew Point",
 
 def start_browser(headless=True):
     """Open Chrome, configured to look like an ordinary browser."""
-    opts = Options()
+    options = webdriver.ChromeOptions()
     if headless:
-        opts.add_argument("--headless=new")
-    for arg in ("--window-size=1400,1000", "--no-sandbox", "--disable-dev-shm-usage",
-                "--disable-gpu", "--disable-blink-features=AutomationControlled",
-                "user-agent=" + USER_AGENT):
-        opts.add_argument(arg)
-    opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-    return webdriver.Chrome(options=opts)
+        # "--headless=new" not "--headless": Chrome 132+ dropped the old
+        # headless mode, and the legacy flag crashes the driver on startup.
+        options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920x1080")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    # Without a real user-agent the site's bot-check refuses the session.
+    options.add_argument("user-agent=" + USER_AGENT)
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-extensions")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    return webdriver.Chrome(
+        service=ChromeService(ChromeDriverManager().install()), options=options)
+
+
+def restart(driver, headless=True):
+    """Throw away a dead browser and open a fresh one."""
+    try:
+        driver.quit()
+    except Exception:
+        pass
+    return start_browser(headless=headless)
 
 
 def load(driver, url, wait_css):
@@ -66,7 +84,7 @@ def load(driver, url, wait_css):
 
     Returns True on success and False if the page never came up, so one bad
     city does not kill the whole run. If the browser itself has died the
-    WebDriverException propagates, so the caller can restart it.
+    exception propagates, so the caller can restart it.
     """
     try:
         driver.get(url)
@@ -75,8 +93,9 @@ def load(driver, url, wait_css):
 
     deadline = time.time() + TIMEOUT
     while time.time() < deadline:
+        # Selenium cannot see HTTP status codes, so check the title instead.
         if "just a moment" not in (driver.title or "").lower() \
-                and driver.find_elements("css selector", wait_css):
+                and driver.find_elements(By.CSS_SELECTOR, wait_css):
             return True
         time.sleep(1)
     return False
@@ -110,7 +129,7 @@ def scrape_index(driver, tier):
 
     if TIERS[tier] != "6":                      # pagination: widen the list
         try:
-            Select(driver.find_element("css selector", "select#pop")) \
+            Select(driver.find_element(By.CSS_SELECTOR, "select#pop")) \
                 .select_by_value(TIERS[tier])
             time.sleep(2)
         except WebDriverException:
@@ -120,20 +139,20 @@ def scrape_index(driver, tier):
             sys.exit("Could not load the wider city list.")
 
     cities = {}
-    for row in driver.find_elements("css selector", "table.tb-theme tbody tr"):
-        cells = row.find_elements("css selector", "td")
+    for row in driver.find_elements(By.CSS_SELECTOR, "table.tb-theme tbody tr"):
+        cells = row.find_elements(By.CSS_SELECTOR, "td")
         for i in range(0, len(cells), 4):
             block = cells[i:i + 4]
             if len(block) < 4:
                 continue                        # short trailing block
-            link = block[0].find_elements("css selector", "a[href^='/weather/']")
+            link = block[0].find_elements(By.CSS_SELECTOR, "a[href^='/weather/']")
             if not link:
                 continue                        # spacer cell, no city
             url = link[0].get_attribute("href") or ""
             parts = url.split("/weather/")[-1].strip("/").split("/")
             condition = None
             try:
-                icon = block[2].find_element("css selector", "img")
+                icon = block[2].find_element(By.CSS_SELECTOR, "img")
                 condition = clean(icon.get_attribute("title")
                                   or icon.get_attribute("alt"))
             except NoSuchElementException:
@@ -159,11 +178,11 @@ def scrape_city(driver, city):
         print("  skipped (page did not load)")
         return row
 
-    block = driver.find_element("css selector", "#qlook")
+    block = driver.find_element(By.CSS_SELECTOR, "#qlook")
     text = block.text or ""
-    row["temperature"] = (clean(block.find_element("css selector", ".h2").text)
+    row["temperature"] = (clean(block.find_element(By.CSS_SELECTOR, ".h2").text)
                           or city.get("temperature"))
-    paragraphs = block.find_elements("css selector", "p")
+    paragraphs = block.find_elements(By.CSS_SELECTOR, "p")
     if paragraphs:
         row["condition"] = clean(paragraphs[0].text) or city.get("condition")
     row["feels_like"] = value_after("Feels Like", text)
@@ -174,12 +193,12 @@ def scrape_city(driver, city):
     wanted = {"location": "station", "visibility": "visibility",
               "pressure": "pressure", "humidity": "humidity",
               "dew point": "dew_point"}
-    for tr in driver.find_elements("css selector", ".bk-focus__info table tr"):
+    for tr in driver.find_elements(By.CSS_SELECTOR, ".bk-focus__info table tr"):
         try:
-            label = clean(tr.find_element("css selector", "th").text) or ""
+            label = clean(tr.find_element(By.CSS_SELECTOR, "th").text) or ""
             key = wanted.get(label.rstrip(":").strip().lower())
             if key:
-                row[key] = clean(tr.find_element("css selector", "td").text)
+                row[key] = clean(tr.find_element(By.CSS_SELECTOR, "td").text)
         except NoSuchElementException:
             continue                            # missing row -> leave blank
     return row
@@ -194,9 +213,15 @@ def main():
     args = ap.parse_args()
 
     os.makedirs(os.path.dirname(OUT_CSV), exist_ok=True)
-    driver = start_browser(headless=not args.show_browser)
+    headless = not args.show_browser
+    driver = start_browser(headless=headless)
     try:
-        cities = scrape_index(driver, args.cities)
+        try:
+            cities = scrape_index(driver, args.cities)
+        except Exception as e:
+            print("browser died reading the index (%s), retrying" % type(e).__name__)
+            driver = restart(driver, headless)
+            cities = scrape_index(driver, args.cities)
         if args.limit:
             cities = cities[:args.limit]
         print("Found %d cities. Fetching detail pages..." % len(cities))
@@ -208,20 +233,16 @@ def main():
                 print("[%d/%d] %s" % (n, len(cities), city["city"]))
                 try:
                     row = scrape_city(driver, city)
-                except Exception:
+                except Exception as e:
                     # Chrome dies every so often on a long run, and it surfaces
                     # as anything from WebDriverException to a raw urllib3
                     # connection reset - so catch broadly, restart, retry once.
-                    print("  browser died, restarting")
-                    try:
-                        driver.quit()
-                    except Exception:
-                        pass
-                    driver = start_browser(headless=not args.show_browser)
+                    print("  browser died (%s), restarting" % type(e).__name__)
+                    driver = restart(driver, headless)
                     try:
                         row = scrape_city(driver, city)
-                    except Exception:
-                        print("  giving up on this city")
+                    except Exception as e:
+                        print("  giving up on this city: %s" % type(e).__name__)
                         row = dict.fromkeys(FIELDS)
                         row.update(city)
                 writer.writerow(row)
@@ -230,7 +251,7 @@ def main():
     finally:
         try:
             driver.quit()
-        except WebDriverException:
+        except Exception:
             pass
 
     print("Saved %d rows to %s" % (len(cities), OUT_CSV))
