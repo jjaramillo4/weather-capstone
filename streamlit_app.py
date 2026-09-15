@@ -88,7 +88,7 @@ with tab2:
     st.plotly_chart(fig2)
 
     st.markdown(
-     "Each dot is a city. ** Red means it feels hotter than the thermometer says; "
+     "Each dot is a city. **Red means it feels hotter than the thermometer says; "
      "blue means it feels cooler.** Doha is 91°F but feels like 123°F, a 32-degree "
      "gap at 84% humidity. Phoenix, the hottest city in the set at 108°F, actually "
      "feels *cooler* than it reads at 13% humidity. The red cluster sits in the "
