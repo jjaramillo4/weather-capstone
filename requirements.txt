@@ -1,3 +1,8 @@
+# Scraping and cleaning (scrape.py, clean.py)
 selenium==4.47.0
 webdriver-manager==4.1.2
 pandas==2.3.3
+
+# Dashboard (streamlit_app.py)
+streamlit==1.63.0
+plotly==7.0.0
