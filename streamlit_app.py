@@ -67,6 +67,24 @@ with tab1:
     fig.update_traces(marker_color="#2a78d6")
     st.plotly_chart(fig)
 
+    if order == "Hottest":
+        st.markdown(
+            "The hot end of the list is desert and Gulf coast. Phoenix and Las "
+            "Vegas lead at 108°F and 106°F in very dry air, with Dubai, Baghdad "
+            "and Kuwait City close behind. This chart ranks the raw thermometer "
+            "reading, which is why Doha sits mid pack here at 91°F even though "
+            "it is the most punishing city in the set once humidity is counted. "
+            "The **Heat & humidity** tab shows why."
+        )
+    else:
+        st.markdown(
+            "The cold end has three separate causes. La Paz is the coldest city "
+            "in the snapshot at 40°F because it sits high in the Andes. Anadyr "
+            "and Reykjavik are cold by latitude. Montevideo and Antananarivo are "
+            "cold by season: both are in the southern hemisphere, where late "
+            "August is winter."
+        )
+
 with tab2:
     fig2 = px.scatter(
     filtered_df,
@@ -88,7 +106,7 @@ with tab2:
     st.plotly_chart(fig2)
 
     st.markdown(
-     "Each dot is a city. ** Red means it feels hotter than the thermometer says; "
+     "Each dot is a city. **Red means it feels hotter than the thermometer says; "
      "blue means it feels cooler.** Doha is 91°F but feels like 123°F, a 32-degree "
      "gap at 84% humidity. Phoenix, the hottest city in the set at 108°F, actually "
      "feels *cooler* than it reads at 13% humidity. The red cluster sits in the "
@@ -107,6 +125,20 @@ with tab3:
     fig3.update_layout(yaxis_title = "Number of cities")
     fig3.update_traces(marker_color = "#2a78d6")
     st.plotly_chart(fig3)
+
+    st.markdown(
+        f"Each bar counts the cities inside a roughly 3.5°F band. The current "
+        f"slice runs {filtered_df['temp_f'].min():.0f}°F to "
+        f"{filtered_df['temp_f'].max():.0f}°F, with a median of "
+        f"{filtered_df['temp_f'].median():.0f}°F.\n\n"
+        "Across the full snapshot the spread is tighter than 92 countries in "
+        "both hemispheres would suggest: **73% of the 140 cities fall between "
+        "60°F and 90°F**. The tails are thin and specific. Only Phoenix and "
+        "Las Vegas clear 100°F. The five cities below 50°F are cold for three "
+        "different reasons: altitude (La Paz), latitude (Anadyr, Reykjavik), "
+        "and season (Montevideo and Antananarivo are in the southern "
+        "hemisphere, where late August is winter)."
+    )
 
 
 

@@ -2,7 +2,12 @@
 
 Web scraping capstone: current weather for ~140 cities around the world, scraped
 from [Weather Around The World](https://www.timeanddate.com/weather/) on
-timeanddate.com, cleaned with pandas and saved as CSV.
+timeanddate.com, cleaned with pandas, stored in SQLite, and explored through a
+Streamlit dashboard.
+
+**Live dashboard: https://weather-capstone-aax2zrozp2dhrpbm3pvrjj.streamlit.app/**
+
+![The dashboard: filters, summary metrics, and the hottest-cities ranking](docs/dashboard.png)
 
 ## What I'm exploring
 
@@ -34,7 +39,7 @@ pip install -r requirements.txt
 
 ## Running it
 
-Two scripts, run in order.
+Three scripts, run in order.
 
 **1. Scrape** — reads the summary table, then visits each city page:
 
@@ -58,6 +63,15 @@ Prints a before/after summary and writes:
 
 - `data/processed/weather_clean.csv` — one tidy row per city
 - `data/processed/country_summary.csv` — averages grouped by country
+
+**3. Load into SQLite** — writes the CSVs into a database the dashboard reads:
+
+```bash
+python load_sql.py
+```
+
+Creates `db/weather.db` with three tables: `weather_raw`, `weather_clean`, and
+`country_summary`.
 
 ## How the scraping works
 
@@ -103,15 +117,38 @@ never touches.
 ```
 scrape.py                          # program 1: Selenium scrape -> raw CSV
 clean.py                           # program 2: pandas clean -> tidy CSV
+load_sql.py                        # program 3: CSV -> SQLite
+streamlit_app.py                   # the dashboard
 requirements.txt
 data/raw/weather_raw.csv           # raw scrape output
 data/processed/weather_clean.csv   # cleaned data
 data/processed/country_summary.csv # grouped by country
+db/weather.db                      # SQLite database the dashboard reads
+.streamlit/config.toml             # pins the light theme
 ```
 
-## Still to come
+## Dashboard
 
-SQLite storage, a command-line query tool, and a Streamlit dashboard.
+**Live app: https://weather-capstone-aax2zrozp2dhrpbm3pvrjj.streamlit.app/**
+
+A Streamlit dashboard over the SQLite database, deployed on Streamlit Community
+Cloud. Run it locally with:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Three views, all driven by the same filters:
+
+- **Rankings** — the hottest or coldest cities, with a slider for how many to
+  show and a toggle for which end of the scale
+- **Heat & humidity** — temperature against humidity, colored by how far the
+  "feels like" reading drifts from the thermometer. Doha reads 91 °F and feels
+  like 123 °F; Phoenix reads 108 °F and feels cooler than it is
+- **Distribution** — how the 140 readings spread across the temperature range
+
+Two sidebar controls — sky condition and a temperature range — scope all three
+views at once.
 
 ## Note
 
